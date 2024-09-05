@@ -7,6 +7,9 @@ import tensorflow_hub as hub
 import sys
 import pandas as pd
 from sklearn.model_selection import train_test_split
+import classifier_data_lib
+from transformers import InputExample, InputFeatures ,convert_single_example
+
 print('Everything imported')
 
 data = pd.read_csv('https://archive.org/download/fine-tune-bert-tensorflow-train.csv/train.csv.zip',
@@ -42,11 +45,25 @@ train_batch_size = 32
 
 bert_layer = hub.KerasLayer("https://tfhub.dev/tensorflow/bert_en_uncased_L-12_H-768_A-12/4", trainable=False)
 
-# pasing vocabluary path for our tokenizer 
+# pasing vocabluary path for our tokenizer (amount of vocabluare in liverary wich will be used for tokenezation purpose )
 vocab_files = bert_layer.resolved_object.vocab_file.asset_path.numpy()
-# we using uncase version 
+# we using uncase version ( to make it not case sensative )
 do_lower_case = bert_layer.resolved_object.do_lower_case.numpy()
-# 
+# we estantiation our tokenezation ( this will tokenize our setances to tokens )
 tokenizer = BertTokenizer.from_pretrained("bert-base-uncased", clean_up_tokenization_spaces=True)
 
 print("model finsihed ")
+# example of tokenezation on sentance 
+print(tokenizer.wordpiece_tokenizer.tokenize('hi , how are you doing?'))
+# converting tokens to the to the numeric token ids  
+print(tokenizer.convert_tokens_to_ids((tokenizer.wordpiece_tokenizer.tokenize('hi , how are you doing?'))))
+
+# in this function we inserting or feeding our model with test example and providing labels as 0 , 1  with max seqense 128 
+def to_feature(text, label, label_list = label_list,max_seq_length = max_seq_length ,tokenizer = tokenizer):
+
+    example = classifier_data_lib.InputExample(guid = None,text_a =text.numpy(),text_b = None,label = label.numpy())
+
+    feature = classifier_data_lib.convert_single_example(0,example,label(list,max_seq_length,tokenizer))
+
+    return (feature.input_ids,feature.input_mask,feature.segment_ids,feature.label_id)
+
