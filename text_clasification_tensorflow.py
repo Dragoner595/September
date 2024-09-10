@@ -125,28 +125,17 @@ print(validation_data.element_spec)
 
 #                                            Building clasification model 
 
-def create_model():
-    # Define inputs
-    input_word_ids = tf.keras.layers.Input(shape=(max_seq_length,), dtype=tf.int32, name='input_word_ids')
-    input_mask = tf.keras.layers.Input(shape=(max_seq_length,), dtype=tf.int32, name='input_mask')
-    segment_ids = tf.keras.layers.Input(shape=(max_seq_length,), dtype=tf.int32, name='segment_ids')
+def build_classifier_model():
+  text_input = tf.keras.layers.Input(shape=(), dtype=tf.string, name='text')
+  preprocessing_layer = hub.KerasLayer(tfhub_handle_preprocess, name='preprocessing')
+  encoder_inputs = preprocessing_layer(text_input)
+  encoder = hub.KerasLayer(tfhub_handle_encoder, trainable=True, name='BERT_encoder')
+  outputs = encoder(encoder_inputs)
+  net = outputs['pooled_output']
+  net = tf.keras.layers.Dropout(0.1)(net)
+  net = tf.keras.layers.Dense(1, activation=None, name='classifier')(net)
+  return tf.keras.Model(text_input, net)
 
-    # Prepare inputs as a list for the BERT layer
-    bert_inputs = [input_word_ids, input_mask, segment_ids]
-
-    # Get BERT output (pooled_output for classification tasks)
-    bert_output = bert_layer(bert_inputs)["pooled_output"]
-
-    # Apply dropout to prevent overfitting
-    drop = tf.keras.layers.Dropout(0.4)(bert_output)
-
-    # Final output layer for binary classification
-    output = tf.keras.layers.Dense(1, activation='sigmoid', name='output')(drop)
-
-    # Create the Keras model
-    model = tf.keras.Model(inputs=[input_word_ids, input_mask, segment_ids], outputs=output)
-    
-    return model
 
 model = create_model()
 model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=2e-5),
