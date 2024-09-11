@@ -251,3 +251,23 @@ print(f'Pooled Outputs Shape:{bert_results["pooled_output"].shape}')
 print(f'Pooled Outputs Values:{bert_results["pooled_output"][0, :12]}')
 print(f'Sequence Outputs Shape:{bert_results["sequence_output"].shape}')
 print(f'Sequence Outputs Values:{bert_results["sequence_output"][0, :12]}')
+
+
+
+
+def build_classifier_model():
+
+  text_input = tf.keras.layers.Input(shape = (), dtype = tf.string, name = 'text' )
+  # used our link for the preprocesor 
+  preprocessing_layer =hub.KerasLayer(tfhub_handle_preprocess, name = 'preprocessing')
+  encoder_inputs = preprocessing_layer(text_input)
+  # used our link from before for a model 
+  encoder = hub.KerasLayer(tfhub_handle_encoder,trainable = True , name = 'Bert_encoder')
+  outputs = encoder(encoder_inputs)
+
+  net = outputs['pooled_output']
+  #  we used drop out to prevent overfeating , dropouts is droping 10 percent of neuron and forcing to find better path 
+  net = tf.keras.layers.Dropout(0.1)(net)
+  net = tf.keras.layers.Dense(1,activation = None , name = 'classifier')(net)
+  
+  return tf.keras.Model(text_input, net)
