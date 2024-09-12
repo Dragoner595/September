@@ -271,3 +271,25 @@ def build_classifier_model():
   net = tf.keras.layers.Dense(1,activation = None , name = 'classifier')(net)
   
   return tf.keras.Model(text_input, net)
+
+classifier_model = build_classifier_model()
+
+bert_raw_result = classifier_model(tf.constant(text_test))
+
+print(tf.sigmoid(bert_raw_result))
+
+tf.keras.utils.plot_model(classifier_model)
+
+loss = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+metrics = tf.metrics.BinaryAccuracy()
+
+epochs = 5
+steps_per_epoch = tf.data.experimental.cardinality(train_ds).numpy()
+num_train_steps = steps_per_epoch * epochs
+num_warmup_steps = int(0.1*num_train_steps)
+
+init_lr = 3e-5
+optimizer = optimization.create_optimizer(init_lr =init_lr,
+                                          num_train_steps = num_train_steps,
+                                          num_warmup_steps =num_warmup_steps,
+                                          optimizer_type = 'adamw')
