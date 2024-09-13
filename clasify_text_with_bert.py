@@ -293,3 +293,13 @@ optimizer = optimization.create_optimizer(init_lr =init_lr,
                                           num_train_steps = num_train_steps,
                                           num_warmup_steps =num_warmup_steps,
                                           optimizer_type = 'adamw')
+
+classifier_model.compile(optimizer=optimizer,
+                         loss=loss,
+                         metrics=metrics)
+
+print(f'Training model with {tfhub_handle_encoder}')
+history = classifier_model.fit(x=train_ds,
+                               validation_data=val_ds,
+                               epochs=epochs)
+
