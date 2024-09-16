@@ -303,3 +303,7 @@ history = classifier_model.fit(x=train_ds,
                                validation_data=val_ds,
                                epochs=epochs)
 
+loss, accuracy = classifier_model.evaluate(test_ds)
+
+print(f'Loss: {loss}')
+print(f'Accuracy: {accuracy}')
