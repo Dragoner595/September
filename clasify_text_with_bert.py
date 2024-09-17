@@ -307,3 +307,14 @@ loss, accuracy = classifier_model.evaluate(test_ds)
 
 print(f'Loss: {loss}')
 print(f'Accuracy: {accuracy}')
+
+epochs = 5
+steps_per_epoch = tf.data.experimental.cardinality(train_ds).numpy()
+num_train_steps = steps_per_epoch * epochs
+num_warmup_steps = int(0.1*num_train_steps)
+
+init_lr = 3e-5
+optimizer = optimization.create_optimizer(init_lr =init_lr,
+                                          num_train_steps = num_train_steps,
+                                          num_warmup_steps =num_warmup_steps,
+                                          optimizer_type = 'adamw')
