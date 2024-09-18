@@ -144,3 +144,4 @@ model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=2e-5),
 
 # Print model summary
 model.summary()
+
