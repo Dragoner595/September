@@ -328,3 +328,38 @@ print(f'Training model with {tfhub_handle_encoder}')
 history = classifier_model.fit(x=train_ds,
                                validation_data=val_ds,
                                epochs=epochs)
+
+loss, accuracy = classifier_model.evaluate(test_ds)
+
+print(f'Loss: {loss}')
+print(f'Accuracy: {accuracy}')
+
+erhistory_dict = history.history
+print(history_dict.keys())
+
+acc = history_dict['binary_accuracy']
+val_acc = history_dict['val_binary_accuracy']
+loss = history_dict['loss']
+val_loss = history_dict['val_loss']
+
+epochs = range(1, len(acc) + 1)
+fig = plt.figure(figsize=(10, 6))
+fig.tight_layout()
+
+plt.subplot(2, 1, 1)
+# r is for "solid red line"
+plt.plot(epochs, loss, 'r', label='Training loss')
+# b is for "solid blue line"
+plt.plot(epochs, val_loss, 'b', label='Validation loss')
+plt.title('Training and validation loss')
+# plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+
+plt.subplot(2, 1, 2)
+plt.plot(epochs, acc, 'r', label='Training acc')
+plt.plot(epochs, val_acc, 'b', label='Validation acc')
+plt.title('Training and validation accuracy')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.legend(loc='lower right')
