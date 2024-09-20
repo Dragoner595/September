@@ -363,3 +363,10 @@ plt.title('Training and validation accuracy')
 plt.xlabel('Epochs')
 plt.ylabel('Accuracy')
 plt.legend(loc='lower right')
+
+dataset_name = 'imdb'
+saved_model_path = './{}_bert'.format(dataset_name.replace('/', '_'))
+
+classifier_model.save(saved_model_path, include_optimizer=False)
+
+reloaded_model = tf.saved_model.load(saved_model_path)
