@@ -394,3 +394,15 @@ print('Results from the saved model:')
 print_my_examples(examples, reloaded_results)
 print('Results from the model in memory:')
 print_my_examples(examples, original_results)
+
+adj_tops_tensor = tf.constant(adj_tops_50_percent)
+adj_tops_tensor
+
+print(reloaded_model.signatures['serving_default'].structured_input_signature)
+
+batch_size = 512  # Adjust batch size based on memory constraints
+for i in range(0, len(adj_tops_50_percent), batch_size):
+    batch_data = adj_tops_50_percent[i:i+batch_size]
+    serving_results = reloaded_model.signatures['serving_default'](tf.constant(batch_data))
+    serving_results = tf.sigmoid(serving_results['classifier'])
+    print_my_examples(batch_data, serving_results)
