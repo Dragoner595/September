@@ -406,3 +406,17 @@ for i in range(0, len(adj_tops_50_percent), batch_size):
     serving_results = reloaded_model.signatures['serving_default'](tf.constant(batch_data))
     serving_results = tf.sigmoid(serving_results['classifier'])
     print_my_examples(batch_data, serving_results)
+
+# Assuming 'print_my_example' is a dictionary containing sentiment scores
+compound = print_my_example['compound']
+
+# Now classifying the sentiment based on the 'compound' score
+if compound > 0.65:
+    sentiment = 'positive'
+elif compound < 0.45:
+    sentiment = 'negative'
+else:
+    sentiment = 'neutral'
+
+# Optionally, you can print or return the sentiment
+print(sentiment)
