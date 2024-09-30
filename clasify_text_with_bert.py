@@ -420,3 +420,35 @@ else:
 
 # Optionally, you can print or return the sentiment
 print(sentiment)
+
+def classify_sentiment(sentiment_score):
+    if sentiment_score > 0.65:
+        return 'positive'
+    elif sentiment_score < 0.45:
+        return 'negative'
+    else:
+        return 'neutral'
+
+# Loop through results_dict and classify each sentiment
+for key, value in results_dict.items():
+    sentiment_score = value["Sentiment Score"]
+    sentiment_class = classify_sentiment(sentiment_score)
+    
+    # Add the classified sentiment back into the dictionary
+    results_dict[key]["Sentiment"] = sentiment_class
+
+# Print the updated results_dict with sentiment classifications
+for key, value in results_dict.items():
+    print(f"Example {key}: {value['Text']} (Sentiment Score: {value['Sentiment Score']}, Sentiment: {value['Sentiment']})")
+
+
+# Convert results_dict to a list of dictionaries (this is necessary for creating a DataFrame)
+data_list = [{"Text": v["Text"], "Sentiment Score": v["Sentiment Score"], "Sentiment": v["Sentiment"]} for v in results_dict.values()]
+
+# Create a DataFrame from the list of dictionaries
+values_out = pd.DataFrame(data_list)
+
+# Export DataFrame to a CSV file
+values_out.to_csv('/content/sample_data/sentiment_results.csv', index=False)
+
+print("CSV export successful. File saved as 'sentiment_results.csv'.")
